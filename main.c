@@ -3,6 +3,33 @@
 #define sleep 1500000
 #define BUTTON_MASK 0x8u
 
+//PRACTICA INTERRUPCIONS
+//inicializar botons
+	//clock y pullup
+	//PCR12 (SW2)
+	//habilitar a interrupcion
+		//PORTC_PCR3 |= PORT_PCR_IRQC(0XA)
+		// nvic_set_priority(31,1)
+		//nvic_enable_irq(31)
+//Asignar unha rutina de servicio PORTDIntHandler
+	//Rutina:
+		//cosas que hacer con los leds
+		//PORTx_ISFR poner a 1
+
+void init_sw1_interruptions()
+{
+	SIM_COPC = 0;					   // Deshabilitar watchdog
+	SIM_SCGC5 |= SIM_SCGC5_PORTC_MASK; // Habilitar reloxo
+	PORTC_PCR12 = PORT_PCR_MUX(1) | PORT_PCR_PE_MASK | PORT_PCR_PS_MASK; // GPIO + PE + PS
+	GPIOC_PDDR &= ~(1 << 12);											// Input
+	PORTC_PCR12 |= PORT_PCR_IRQC(0XA);
+	NVIC_SetPriority(31,1);
+	NVIC_EnableIRQ(31);
+}
+void PORTDIntHandler(){
+	PORTC_ISFR |= PORT_PCR_ISF_MASK;
+}
+
 void init_button()
 {
 	SIM_COPC = 0;					   // Deshabilitar watchdog
